@@ -178,5 +178,32 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/barang");
     }
+
+    /* Menu Transaction -------------------------------------------------------------------------------------- */
+
+    public function addTransaction()
+    {
+        $id_login = session()->getTempdata('id_login');
+
+        if ($id_login) {
+            $nilai = $this->transaksiModel->save([
+                'judul_transaksi' => $this->request->getPost('judul_transaksi'),
+                'total_transaksi' => 0,
+                'id_created' => $id_login
+            ]);
+
+            if ($nilai == 1) {
+                session()->setFlashdata('pesan', 'Data Transaksi Berhasil Ditambah');
+                session()->setFlashdata('icon', 'success');
+                session()->setFlashdata('title', 'Berhasil');
+            } else {
+                session()->setFlashdata('pesan', 'Data Transaksi Gagal Ditambah');
+                session()->setFlashdata('icon', 'error');
+                session()->setFlashdata('title', 'Gagal');
+            }
+        }
+
+        return redirect()->to(base_url() . "/transaksi");
+    }
     }
 }
