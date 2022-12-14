@@ -6,6 +6,7 @@ use App\Models\UserModel;
 use App\Models\TransaksiModel;
 use App\Models\TransaksiBarangModel;
 use App\Models\BarangModel;
+use App\Models\NotifikasiModel;
 use CodeIgniter\Controller;
 use CodeIgniter\HTTP\CLIRequest;
 use CodeIgniter\HTTP\IncomingRequest;
@@ -57,5 +58,6 @@ abstract class BaseController extends Controller
         $this->transaksiModel = new TransaksiModel();
         $this->transaksiBarangModel = new TransaksiBarangModel();
         $this->barangModel = new BarangModel();
+        $this->notifModel = new NotifikasiModel();
     }
 }
