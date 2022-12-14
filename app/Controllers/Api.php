@@ -16,8 +16,13 @@ class Api extends BaseController
 
         dd($data);
     }
+
     public function index()
     {
-        return view('welcome_message');
+        $data = $this->userModel->findAll();
+        foreach ($data as $a) {
+            echo $a['id_user'], " <br>";
+        }
+    }
     }
 }
