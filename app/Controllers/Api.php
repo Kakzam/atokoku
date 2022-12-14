@@ -646,5 +646,42 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/user");
     }
+
+    /* Login Users ------------------------------------------------------------------------------------------- */
+
+    public function validationUser()
+    {
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        $direc = "";
+
+        $db = db_connect();
+        $result = $db->query("SELECT COUNT(*) as Count FROM `tbl_user` WHERE username = '$username' AND password = '$password'");
+
+        if ($result->getRow()->Count == 1) {
+            $direc = "/dashboard";
+            $user = $this->userModel->findAll();
+            foreach ($user as $us) {
+                if ($us['username'] == $username && $us['password'] == $password) {
+                    $temp = 1200; // Sesion Bertahan 20 Menit
+                    session()->setTempdata('id_login', $us['id_user'], $temp);
+                    session()->setTempdata('name_login', $us['nama_user'], $temp);
+                    session()->setTempdata('image', '', $temp);
+                    session()->setTempdata('jenis', $us['jenis'], $temp);
+                    session()->setTempdata('is_login', true, $temp);
+                    session()->setFlashdata('pesan', 'Selamat anda berhasil login.');
+                    session()->setFlashdata('icon', 'success');
+                    session()->setFlashdata('title', 'Berhasil');
+                }
+            }
+        } else {
+            $direc = "/";
+            session()->setFlashdata('pesan', 'Username atau password salah');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+        return redirect()->to(base_url() . $direc);
+    }
     }
 }
