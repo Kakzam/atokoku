@@ -43,4 +43,39 @@ class Home extends BaseController
         ];
         return session()->getTempdata('is_login') ? view('tambah_transaksi', $data) : redirect()->to(base_url());
     }
+
+    public function transaksi_barang()
+    {
+        if ($this->request->getVar('id')) $id = $this->request->getVar('id');
+        else $id = session()->getFlashdata('id');
+
+        $db = db_connect();
+        session()->setFlashdata('id', $id);
+
+        $items = $this->barangModel->findAll();
+        $itemTransactions = $db->query("SELECT * FROM `tbl_transaksi_barang` WHERE id_transaksi='$id'")->getResultArray();
+        $Fitems = array();
+
+        foreach ($items as $item) {
+            $check = true;
+            foreach ($itemTransactions as $itemTransaction) {
+                if ($item['id_barang'] == $itemTransaction['id_barang']) {
+                    $check = false;
+                }
+            }
+            if ($check) {
+                array_push($Fitems, $item);
+            }
+        }
+
+        $data = [
+            'title' => 'Barang Belanja',
+            'keterangan' => $db->query("SELECT * FROM `tbl_transaksi` WHERE id_transaksi='$id'")->getResultArray(),
+            'barang' => $itemTransactions,
+            'list' => $Fitems
+            // 'list' => $db->query("SELECT * FROM `tbl_barang`")->getResultArray()
+        ];
+
+        return session()->getTempdata('is_login') ? view('tambah_transaksi_barang', $data) : redirect()->to(base_url());
+    }
 }
