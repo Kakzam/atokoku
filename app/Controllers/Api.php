@@ -223,5 +223,49 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/transaksi");
     }
+
+    public function updateTransaction()
+    {
+        $id_login = session()->getTempdata('id_login');
+
+        if ($id_login) {
+            $id = $this->request->getVar('id');
+            $db = db_connect();
+            $id_user = session()->getTempdata('id_login');
+
+            $result = $db->query("SELECT COUNT(*) as Count FROM `tbl_transaksi_barang` WHERE id_transaksi = '$id'");
+            $total = 0;
+            if ($result->getRow()->Count > 0) {
+                $tt = $this->transaksiBarangModel->findAll();
+                foreach ($tt as $ambil) {
+                    if ($ambil['id_transaksi'] == $id) {
+                        $total += $ambil['total'];
+                    }
+                }
+            }
+
+            if ($id_user) {
+                $nilai = $this->transaksiModel->save([
+                    'id_transaksi' => $id,
+                    'judul_transaksi' => $this->request->getVar('judul_transaksi'),
+                    'tanggal_transaksi' => date('y-m-d H:i:s'),
+                    'total_transaksi' => $total,
+                    'id_created' => $id_login
+                ]);
+            }
+
+            if ($nilai == 1) {
+                session()->setFlashdata('pesan', 'Data Transaksi Berhasil Diupdate');
+                session()->setFlashdata('icon', 'success');
+                session()->setFlashdata('title', 'Berhasil');
+            } else {
+                session()->setFlashdata('pesan', 'Data Transaksi Gagal Diupdate');
+                session()->setFlashdata('icon', 'error');
+                session()->setFlashdata('title', 'Gagal');
+            }
+        }
+
+        return redirect()->to(base_url() . "/transaksi");
+    }
     }
 }
