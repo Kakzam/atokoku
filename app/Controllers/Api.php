@@ -470,5 +470,115 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/transaksi_barang");
     }
+
+    public function updateTransactionBarang()
+    {
+        $id_user = session()->getTempdata('id_login');
+        if ($id_user) {
+            $id_transaksi = session()->getFlashdata('id_transaksi');
+            session()->setFlashdata('id', $id_transaksi);
+
+            $nilai = $this->transaksiBarangModel->save([
+                'id_transaksi_barang' => $this->request->getVar('id_transaksi_barang'),
+                'id_transaksi' => $id_transaksi,
+                'id_barang' => $this->request->getVar('id_barang'),
+                'id_created' => $id_user,
+                'nama_barang' => $this->request->getVar('nama_barang'),
+                'harga_barang' => $this->request->getVar('harga'),
+                'qty' => $this->request->getVar('qty'),
+                'total' => $this->request->getVar('total')
+            ]);
+
+            if ($nilai == 1) {
+                session()->setFlashdata('pesan', 'Data Barang Berhasil Diubah');
+                session()->setFlashdata('icon', 'success');
+                session()->setFlashdata('title', 'Berhasil');
+
+                /* Update Transaksi */
+                $db = db_connect();
+
+                $result = $db->query("SELECT COUNT(*) as Count FROM `tbl_transaksi_barang` WHERE id_transaksi = '$id_transaksi'");
+                $total = 0;
+                if ($result->getResultArray() > 0) {
+                    $tt = $this->transaksiBarangModel->findAll();
+                    foreach ($tt as $ambil) {
+                        if ($ambil['id_transaksi'] == $id_transaksi) {
+                            $total += $ambil['total'];
+                        }
+                    }
+                }
+
+                $result = $db->query("SELECT judul_transaksi FROM `tbl_transaksi` WHERE id_transaksi = '$id_transaksi'");
+                $judul = "";
+                if ($result->getResultArray() > 0) {
+                    foreach ($result->getResultArray() as $ambil) {
+                        $judul = $ambil['judul_transaksi'];
+                    }
+                }
+
+                if ($id_user) {
+                    $this->transaksiModel->save([
+                        'id_transaksi' => $id_transaksi,
+                        'judul_transaksi' => $judul,
+                        'tanggal_transaksi' => date('y-m-d H:i:s'),
+                        'total_transaksi' => $total,
+                        'id_created' => $id_user
+                    ]);
+                }
+
+                /* Update Menu Barang */
+                $qty_before = $this->request->getVar('qty_before');
+                $qty = $this->request->getVar('qty');
+                $id = $this->request->getVar('id_barang');
+                $nama_barang = $this->request->getVar('nama_barang');
+                $harga = $this->request->getVar('harga');
+                $stock = 0;
+                $warning = 0;
+                $id_created = 0;
+
+                $result = $db->query("SELECT * FROM `tbl_barang` WHERE id_barang = '$id'");
+                if ($result->getResultArray() > 0) {
+                    foreach ($result->getResultArray() as $ambil) {
+                        $stock = $ambil['stock'];
+                        $warning = $ambil['warning'];
+                        $id_created = $ambil['id_created'];
+                    }
+                }
+
+                $total = ($stock + $qty_before) - $qty;
+
+                $this->barangModel->save([
+                    'id_barang' => $id,
+                    'nama_barang' => $nama_barang,
+                    'id_created' => $id_created,
+                    'harga' => $harga,
+                    'stock' => $total,
+                    'warning' => $warning
+                ]);
+
+                if ($total <= $warning) {
+                    $this->notifModel->save([
+                        'judul' => "Barang $nama_barang Habis!",
+                        'isi' => "Barang $nama_barang Tersisa $total silahkan menambah stock, membeli kembali atau merubah peringatan di Menu Barang",
+                        'tujuan' => 2,
+                        'status' => 0,
+                        'created' => 0,
+                        'jenis_created' => 1,
+                        'approve' => 0
+                    ]);
+                }
+            } else {
+                session()->setFlashdata('pesan', 'Data Barang Gagal Diubah');
+                session()->setFlashdata('icon', 'error');
+                session()->setFlashdata('title', 'Gagal');
+            }
+        } else {
+            session()->setFlashdata('pesan', 'Data Barang Gagal Diubah');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+        return redirect()->to(base_url() . "/transaksi_barang");
+    }
     }
 }
