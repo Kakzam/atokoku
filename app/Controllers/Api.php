@@ -580,5 +580,30 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/transaksi_barang");
     }
+
+    /* Menu Users -------------------------------------------------------------------------------------------- */
+
+    public function addUser()
+    {
+        $nilai = $this->userModel->save([
+            'username' => $this->request->getPost('username'),
+            'password' => $this->request->getPost('password'),
+            'nama_user' => $this->request->getPost('nama_user'),
+            'jenis' => $this->request->getPost('jenis')
+        ]);
+
+        if ($nilai == 1) {
+            session()->setFlashdata('pesan', 'Data User Berhasil Ditambah');
+            session()->setFlashdata('icon', 'success');
+            session()->setFlashdata('title', 'Berhasil');
+        } else {
+            session()->setFlashdata('pesan', 'Data User Gagagl Ditambah');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+        echo $nilai;
+        return redirect()->to(base_url() . "/user");
+    }
     }
 }
