@@ -68,5 +68,37 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/barang");
     }
+
+    public function updateItem()
+    {
+        if (session()->getTempdata('id_login')) {
+            $id = $this->request->getVar('id_barang');
+            $nilai = $this->barangModel->save([
+                'id_barang' => $id,
+                'nama_barang' => $this->request->getPost('nama_barang'),
+                'id_created' => session()->getTempdata('id_login'),
+                'harga' => $this->request->getPost('harga'),
+                'stock' => $this->request->getPost('stock'),
+                'warning' => $this->request->getPost('warning')
+            ]);
+
+            if ($nilai == 1) {
+                session()->setFlashdata('pesan', 'Data Barang Berhasil Diupdate');
+                session()->setFlashdata('icon', 'success');
+                session()->setFlashdata('title', 'Berhasil');
+            } else {
+                session()->setFlashdata('pesan', 'Data Barang Gagal Diupdate');
+                session()->setFlashdata('icon', 'error');
+                session()->setFlashdata('title', 'Gagal');
+            }
+        } else {
+            session()->setFlashdata('pesan', 'Data Barang Gagal Diupdate');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+
+        return redirect()->to(base_url() . "/barang");
+    }
     }
 }
