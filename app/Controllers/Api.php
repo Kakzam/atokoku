@@ -100,5 +100,40 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/barang");
     }
+
+    /* Menu Notification ------------------------------------------------------------------------------------- */
+
+    public function addNotification()
+    {
+        $id = session()->getTempdata('id_login');
+
+        if ($id) {
+            $nilai = $this->notifModel->save([
+                'judul' => $this->request->getVar('judul'),
+                'isi' => $this->request->getVar('isi'),
+                'tujuan' => $this->request->getVar('tujuan'),
+                'status' => 0,
+                'created' => session()->getTempdata('id_login'),
+                'jenis_created' => session()->getTempdata('jenis'),
+                'approve' => 0
+            ]);
+
+            if ($nilai == 1) {
+                session()->setFlashdata('pesan', 'Notifikasi Berhasil Ditambah');
+                session()->setFlashdata('icon', 'success');
+                session()->setFlashdata('title', 'Berhasil');
+            } else {
+                session()->setFlashdata('pesan', 'Notifikasi Gagal Ditambah');
+                session()->setFlashdata('icon', 'error');
+                session()->setFlashdata('title', 'Gagal');
+            }
+        } else {
+            session()->setFlashdata('pesan', 'Notifikasi Gagal Ditambah');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+        return redirect()->to(base_url() . "/notif");
+    }
     }
 }
