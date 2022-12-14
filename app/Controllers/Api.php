@@ -370,5 +370,105 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/transaksi_barang");
     }
+
+    public function deleteTransactionBarang()
+    {
+        $id_user = session()->getTempdata('id_login');
+        if ($id_user) {
+            $id_transaksi = session()->getFlashdata('id_transaksi');
+            session()->setFlashdata('id', $id_transaksi);
+
+            $id_transaksi_barang = $this->request->getVar('id_transaksi_barang');
+            $nilai = $this->transaksiBarangModel->delete($id_transaksi_barang);
+
+            if ($nilai == 1) {
+                session()->setFlashdata('pesan', 'Data Barang Berhasil Dihapus');
+                session()->setFlashdata('icon', 'success');
+                session()->setFlashdata('title', 'Berhasil');
+
+                /* Update Transaction */
+                $db = db_connect();
+
+                $result = $db->query("SELECT COUNT(*) as Count FROM `tbl_transaksi_barang` WHERE id_transaksi = '$id_transaksi'");
+                $count = $result->getRow()->Count;
+
+                $total = 0;
+                if ($count > 0) {
+                    $tt = $this->transaksiBarangModel->findAll();
+                    foreach ($tt as $ambil) {
+                        if ($ambil['id_transaksi'] == $id_transaksi) {
+                            $total += $ambil['total'];
+                        }
+                    }
+                } else $total = 0;
+
+                $result = $db->query("SELECT * FROM `tbl_transaksi` WHERE id_transaksi = '$id_transaksi'");
+                $judul_transaksi = "";
+                if ($result->getResultArray() > 0) {
+                    foreach ($result->getResultArray() as $ambil) {
+                        $judul_transaksi = $ambil['judul_transaksi'];
+                    }
+                }
+
+                if ($id_user) {
+                    $this->transaksiModel->save([
+                        'id_transaksi' => $id_transaksi,
+                        'judul_transaksi' => $judul_transaksi,
+                        'tanggal_transaksi' => date('y-m-d H:i:s'),
+                        'total_transaksi' => $total,
+                        'id_created' => $id_user
+                    ]);
+                }
+
+                /* Update Barang */
+                $id_barang = $this->request->getVar('id_barang');
+                $result = $db->query("SELECT * FROM `tbl_barang` WHERE id_barang = '$id_barang'");
+                if ($result->getResultArray() > 0) {
+                    foreach ($result->getResultArray() as $ambil) {
+                        $stock = $ambil['stock'];
+                        $warning = $ambil['warning'];
+                        $id_created = $ambil['id_created'];
+                        $nama_barang = $ambil['nama_barang'];
+                        $harga = $ambil['harga'];
+                    }
+                }
+
+                $qty_before = $this->request->getVar('qty_before');
+                $total = $stock + $qty_before;
+
+                $this->barangModel->save([
+                    'id_barang' => $id_barang,
+                    'nama_barang' => $nama_barang,
+                    'id_created' => $id_created,
+                    'harga' => $harga,
+                    'stock' => $total,
+                    'warning' => $warning
+                ]);
+
+                if ($total <= $warning) {
+                    $this->notifModel->save([
+                        'judul' => "Barang $nama_barang Habis!",
+                        'isi' => "Barang $nama_barang Tersisa $total silahkan menambah stock, membeli kembali atau merubah peringatan di Menu Barang",
+                        'tujuan' => 2,
+                        'status' => 0,
+                        'created' => 0,
+                        'jenis_created' => 1,
+                        'approve' => 0
+                    ]);
+                }
+            } else {
+                session()->setFlashdata('pesan', 'Data Barang Gagal Dihapus');
+                session()->setFlashdata('icon', 'error');
+                session()->setFlashdata('title', 'Gagal');
+            }
+        } else {
+            session()->setFlashdata('pesan', 'Data Barang Gagal Dihapus');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+
+        return redirect()->to(base_url() . "/transaksi_barang");
+    }
     }
 }
