@@ -621,5 +621,30 @@ class Api extends BaseController
         }
         return redirect()->to(base_url() . "/user");
     }
+
+    public function updateUser()
+    {
+
+        $nilai = $this->userModel->save([
+            'id_user' => $this->request->getVar('id'),
+            'username' => $this->request->getVar('username'),
+            'password' => $this->request->getVar('password'),
+            'nama_user' => $this->request->getVar('nama_user'),
+            'tanggal_buat' => date('y-m-d H:i:s'),
+            'jenis' => $this->request->getVar('jenis')
+        ]);
+
+        if ($nilai == 1) {
+            session()->setFlashdata('pesan', 'Data User Berhasil Diupdate');
+            session()->setFlashdata('icon', 'success');
+            session()->setFlashdata('title', 'Berhasil');
+        } else {
+            session()->setFlashdata('pesan', 'Data User Gagal Diupdate');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+        return redirect()->to(base_url() . "/user");
+    }
     }
 }
