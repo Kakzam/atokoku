@@ -50,5 +50,23 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/barang");
     }
+
+    public function deleteItem()
+    {
+        $id = $this->request->getVar('id');
+        $nilai = $this->barangModel->delete($id);
+
+        if ($nilai == 1) {
+            session()->setFlashdata('pesan', 'Data Barang Berhasil Dihapus');
+            session()->setFlashdata('icon', 'success');
+            session()->setFlashdata('title', 'Berhasil');
+        } else {
+            session()->setFlashdata('pesan', 'Data Barang Gagal Dihapus');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+        return redirect()->to(base_url() . "/barang");
+    }
     }
 }
