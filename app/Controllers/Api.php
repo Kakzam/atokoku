@@ -683,5 +683,15 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . $direc);
     }
+
+    /* Logout Users ------------------------------------------------------------------------------------------ */
+
+    public function logout()
+    {
+        session()->destroy();
+        session()->setFlashdata('pesan', 'Selamat anda berhasil keluar.');
+        session()->setFlashdata('icon', 'success');
+        session()->setFlashdata('title', 'Berhasil');
+        return redirect()->to(base_url());
     }
 }
