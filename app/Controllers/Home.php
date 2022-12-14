@@ -34,4 +34,13 @@ class Home extends BaseController
         ];
         return session()->getTempdata('is_login') ? view('tambah_barang', $data) : redirect()->to(base_url());
     }
+
+    public function transaksi()
+    {
+        $data = [
+            'title' => 'Transaksi',
+            'transaksi' => $this->transaksiModel->findAll()
+        ];
+        return session()->getTempdata('is_login') ? view('tambah_transaksi', $data) : redirect()->to(base_url());
+    }
 }
