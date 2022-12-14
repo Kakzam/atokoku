@@ -605,5 +605,21 @@ class Api extends BaseController
         echo $nilai;
         return redirect()->to(base_url() . "/user");
     }
+
+    public function deleteUser()
+    {
+        $nilai = $this->userModel->delete($this->request->getVar('id'));
+
+        if ($nilai == 1) {
+            session()->setFlashdata('pesan', 'Data User Berhasil Dihapus');
+            session()->setFlashdata('icon', 'success');
+            session()->setFlashdata('title', 'Berhasil');
+        } else {
+            session()->setFlashdata('pesan', 'Data User Gagal Dihapus');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+        return redirect()->to(base_url() . "/user");
+    }
     }
 }
