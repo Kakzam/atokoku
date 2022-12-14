@@ -135,5 +135,23 @@ class Api extends BaseController
 
         return redirect()->to(base_url() . "/notif");
     }
+
+    public function deleteNotification()
+    {
+        $id = $this->request->getVar('id');
+        $nilai = $this->notifModel->delete($id);
+
+        if ($nilai == 1) {
+            session()->setFlashdata('pesan', 'Notifikasi Berhasil Dihapus');
+            session()->setFlashdata('icon', 'success');
+            session()->setFlashdata('title', 'Berhasil');
+        } else {
+            session()->setFlashdata('pesan', 'Notifikasi Gagal Dihapus');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+        return redirect()->to(base_url() . "/notif");
+    }
     }
 }
