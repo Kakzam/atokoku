@@ -24,5 +24,31 @@ class Api extends BaseController
             echo $a['id_user'], " <br>";
         }
     }
+
+    /* Menu Barang ------------------------------------------------------------------------------------------- */
+
+    public function addItem()
+    {
+        $nilai = $this->barangModel->save([
+            'nama_barang' => $this->request->getPost('nama_barang'),
+            'id_created' => session()->getTempdata('id_login'),
+            'harga' => $this->request->getPost('harga'),
+            'stock' => $this->request->getPost('stock'),
+            'warning' => $this->request->getPost('warning')
+            // 'tanggal_buat' => date('y-m-d H:i:s')
+        ]);
+
+        if ($nilai == 1) {
+            session()->setFlashdata('pesan', 'Data Barang Berhasil Ditambah');
+            session()->setFlashdata('icon', 'success');
+            session()->setFlashdata('title', 'Berhasil');
+        } else {
+            session()->setFlashdata('pesan', 'Data Barang Gagal Ditambah');
+            session()->setFlashdata('icon', 'error');
+            session()->setFlashdata('title', 'Gagal');
+        }
+
+        return redirect()->to(base_url() . "/barang");
+    }
     }
 }
