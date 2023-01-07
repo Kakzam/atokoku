@@ -78,4 +78,50 @@ class Home extends BaseController
 
         return session()->getTempdata('is_login') ? view('tambah_transaksi_barang', $data) : redirect()->to(base_url());
     }
+
+    public function user()
+    {
+        $page = $this->request->getVar('page') ? $this->request->getVar('page') : 1;
+        $paginate = 5;
+
+        $search = $this->request->getVar('search');
+        if ($search) {
+            $user = $this->userModel->like('username', $search)->orLike('name_user', $search);
+        } else {
+            $user = $this->userModel;
+        }
+
+        $data = [
+            'title' => 'Users',
+            'user' => $this->userModel->findAll(),
+            // 'user' => $user->paginate($paginate),
+            'pager' => $this->userModel->pager,
+            'page' => $page,
+            'paginate' => $paginate
+        ];
+
+        return session()->getTempdata('is_login') ? view('tambah_user', $data) : redirect()->to(base_url());
+    }
+
+    public function notifikasi()
+    {
+        $data = [
+            'title' => 'Notifikasi',
+            'notif' => $this->notifModel->findAll()
+        ];
+
+        return session()->getTempdata('is_login') ? view('notifikasi', $data) : redirect()->to(base_url());
+    }
+
+    public function dashboard()
+    {
+        $data = [
+            'title' => 'Dashboard',
+            'user' => $this->userModel->countAll(),
+            'transaksi' => $this->transaksiModel->countAll(),
+            'barang' => $this->barangModel->countAll()
+        ];
+
+        return session()->getTempdata('is_login') ? view('dashboard', $data) : redirect()->to(base_url());
+    }
 }

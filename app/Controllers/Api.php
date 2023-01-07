@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 class Api extends BaseController
 {
+
     public function test()
     {
         $requests = $this->barangModel->findAll();

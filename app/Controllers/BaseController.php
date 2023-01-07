@@ -3,8 +3,8 @@
 namespace App\Controllers;
 
 use App\Models\UserModel;
-use App\Models\TransaksiModel;
 use App\Models\TransaksiBarangModel;
+use App\Models\TransaksiModel;
 use App\Models\BarangModel;
 use App\Models\NotifikasiModel;
 use CodeIgniter\Controller;
@@ -24,7 +24,7 @@ use Psr\Log\LoggerInterface;
  *
  * For security be sure to declare any new methods as protected or private.
  */
-abstract class BaseController extends Controller
+class BaseController extends Controller
 {
     /**
      * Instance of the main Request object.
@@ -53,7 +53,6 @@ abstract class BaseController extends Controller
         // Preload any models, libraries, etc, here.
 
         // E.g.: $this->session = \Config\Services::session();
-
         $this->userModel = new UserModel();
         $this->transaksiModel = new TransaksiModel();
         $this->transaksiBarangModel = new TransaksiBarangModel();

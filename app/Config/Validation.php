@@ -2,17 +2,16 @@
 
 namespace Config;
 
-use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Validation\CreditCardRules;
 use CodeIgniter\Validation\FileRules;
 use CodeIgniter\Validation\FormatRules;
 use CodeIgniter\Validation\Rules;
 
-class Validation extends BaseConfig
+class Validation
 {
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
     // Setup
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 
     /**
      * Stores the classes that contain the
@@ -38,7 +37,7 @@ class Validation extends BaseConfig
         'single' => 'CodeIgniter\Validation\Views\single',
     ];
 
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
     // Rules
-    // --------------------------------------------------------------------
+    //--------------------------------------------------------------------
 }
