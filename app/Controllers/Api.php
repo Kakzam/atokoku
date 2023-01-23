@@ -98,12 +98,10 @@ class Api extends BaseController
             session()->setFlashdata('title', 'Gagal');
         }
 
-
         return redirect()->to(base_url() . "/barang");
     }
 
     /* Menu Notification ------------------------------------------------------------------------------------- */
-
     public function addNotification()
     {
         $id = session()->getTempdata('id_login');
@@ -270,7 +268,6 @@ class Api extends BaseController
     }
 
     /* Menu Transaction Barang ------------------------------------------------------------------------------- */
-
     public function addTransactionBarang()
     {
         $id_transaksi = session()->getFlashdata('id_transaksi');
@@ -333,15 +330,6 @@ class Api extends BaseController
             $nama_barang = $this->request->getVar('nama_barang');
             $harga = $this->request->getVar('harga');
             $total = $stock - $qty;
-
-            // echo $stock, "<br>";
-            // echo $warning, "<br>";
-            // echo $qty, "<br>";
-            // echo $id, "<br>";
-            // echo $id_created, "<br>";
-            // echo $nama_barang, "<br>";
-            // echo $harga, "<br>";
-            // echo $total, "<br>";
 
             $this->barangModel->save([
                 'id_barang' => $id,
@@ -649,7 +637,6 @@ class Api extends BaseController
     }
 
     /* Login Users ------------------------------------------------------------------------------------------- */
-
     public function validationUser()
     {
         $username = $_POST['username'];
